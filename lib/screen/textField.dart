@@ -12,33 +12,53 @@ class _TextFieldScreenState extends State<TextFieldScreen> {
   final TextEditingController _amountController = TextEditingController();
 
   void onChangeText(String amount) {
-      if (amount.isEmpty) {
-        amount;
+    if (amount.isEmpty) {
+      return;
+    }
+
+    List<String> parts = amount.split('.');
+
+    String newText = parts[0].replaceAll(',', '');
+
+    String formatted = '';
+
+    print('length ${newText.length}');
+
+    if (newText.length > 3) {
+      formatted = newText.substring(newText.length - 3);
+      print('formatted $formatted');
+
+      newText = newText.substring(0, newText.length - 3);
+      print('newText $newText');
+    } else {
+
+      print('newText $newText');
+      formatted = newText;
+      newText = '';
+    }
+
+    while (newText.isNotEmpty) {
+      if (newText.length > 2) {
+        formatted = '${newText.substring(newText.length - 2)},$formatted';
+        newText = newText.substring(0, newText.length - 2);
+        print('newText $newText and $formatted');
+      } else {
+        formatted = '$newText,$formatted';
+        newText = '';
+        print('elseNewText $newText and $formatted');
+
       }
-      List<String> parts = amount.split('.');
-
-      String newText = parts[0].replaceAll(',', '');
-
-      String reversed = newText.split('').reversed.join('');
-
-      String formattedReversed = '';
-      for (int i = 0; i < reversed.length; i++) {
-        if (i > 0 && i % 3 == 0) {
-          formattedReversed += ',';
-        }
-        formattedReversed += reversed[i];
-      }
+    }
 
 
-      String finalText = formattedReversed.split('').reversed.join('');
+    if (parts.length > 1) {
+      String decimalPart = parts[1].substring(0, parts[1].length > 2 ? 2 : parts[1].length);
+      formatted += '.$decimalPart';
+    }
 
-      if (parts.length>1) {
-        String decimalPart = parts[1].substring(0, parts[1].length > 2 ? 2 : parts[1].length);
-        finalText += '.$decimalPart';
-      }
     _amountController.value = TextEditingValue(
-      text: finalText,
-      selection: TextSelection.collapsed(offset: finalText.length),
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
 
